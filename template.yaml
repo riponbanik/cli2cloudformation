@@ -1,0 +1,47 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: cli2cloudformation 
+
+Resources:      
+  cli2cloudformationLambdaRole:
+    Type: AWS::IAM::Role    
+    Properties:
+      RoleName: cli2cloudformationLambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: cli2cloudformationLambda-Logs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*             
+                 
+
+  cli2cloudformationLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./   
+      Handler: "index.lambda_handler"
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 60
+      Role: !GetAtt cli2cloudformationLambdaRole.Arn      
+Outputs:
+  cli2cloudformationLambdaArn:
+    Description: cli2cloudformation Lambda Arn
+    Value: !GetAtt cli2cloudformationLambda.Arn
+    Export:
+      Name: cli2cloudformationLambdaArn

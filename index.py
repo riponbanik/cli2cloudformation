@@ -1,11 +1,14 @@
-import json
+import json, boto3, logging
 import shlex
 import subprocess
-from botocore.vendored import requests
+import cfnresponse
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-
+    logger.info("event: {}".format(event))
     if 'RequestType' not in event or 'ResourceProperties' not in event:
         send_cfn_response(event, context, "FAILED", {}, "Cannot identify RequestType or ResourceProperties.")
         return
@@ -51,8 +54,8 @@ def send_cfn_response(event, context, response_status, response_data, reason):
                     'LogicalResourceId': event['LogicalResourceId'],
                     'Data': response_data}
     print("Log Reason: " + reason)
-    try:
-        requests.put(event['ResponseURL'], data=json.dumps(response_body))
+    try:        
+        cfnresponse.send(event, context, response_status, response_data, context.log_stream_name)            
     except Exception as e:
         print(e)
         raise
