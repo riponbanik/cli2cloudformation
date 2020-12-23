@@ -55,7 +55,7 @@ def send_cfn_response(event, context, response_status, response_data, reason):
                     'Data': response_data}
     print("Log Reason: " + reason)
     try:        
-        cfnresponse.send(event, context, response_status, response_data, context.log_stream_name)            
+        cfnresponse.send(event, context, response_status, response_data)            
     except Exception as e:
         print(e)
         raise
