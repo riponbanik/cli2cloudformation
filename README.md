@@ -39,8 +39,9 @@ Than, in any part of your template you can get this result just including:
 
 ## Deploy via AWS Cloudformation/SAM Transformation
 ```
-pip3 install -r requirements.txt -t .
 mkdir -p output
+cp index.py output/
+pip3 install -t output/ -r requirements.txt
 aws cloudformation package --template-file template.yaml --output-template-file output/packaged.yaml --s3-bucket your-s3-bucket
 aws cloudformation deploy --template-file output/packaged.yaml --stack-name cli2cloudformation --capabilities CAPABILITY_NAMED_IAM
 ```
